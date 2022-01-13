@@ -16,7 +16,7 @@ Released under AGPL see LICENSE for more information
 
 // Globals
 TCHAR	strErrMsg[1024];
-DWORD	dwModuleRelocs = 0;
+DWORD	dwModuleRelocs = 0; 
 void*	eventWrite = GetProcAddress(LoadLibraryA("ntdll"), "EtwEventWrite");
 DWORD	dwCountError = 0;
 DWORD	dwCountOK = 0;
@@ -149,6 +149,7 @@ void AnalyzeProc(DWORD dwPID)
 		}
 
 		dwCountError++;
+		if (hProcess != NULL)CloseHandle(hProcess);
 		return;
 	}
 	dwMods = dwRet / sizeof(HMODULE);
@@ -161,7 +162,7 @@ void AnalyzeProc(DWORD dwPID)
 
 
 	// Print the process name
-	// fwprintf(stdout, _TEXT("[i]  --> %s\n"), cProcess);
+	//fwprintf(stdout, _TEXT("[i]  --> %s\n"), cProcess);
 
 
 	// Now for each of the modules check that NTDLL is present
@@ -287,7 +288,6 @@ void EnumerateProcesses()
 
 	// Total nuber of process IDs
 	dwPIDS = dwRet / sizeof(DWORD);
-
 	//
 	// Test case
 	// Remote process patch
@@ -309,5 +309,7 @@ void EnumerateProcesses()
 		//fwprintf(stdout, _TEXT("[i] Analyzing PID %d\n"), dwPIDArray[intCount]);
 		AnalyzeProc(dwPIDArray[intCount]);
 	}
+
+	fwprintf(stdout, _TEXT("[i] Total of %d processes %d didn't open  \n"), dwPIDS, dwCountError);
 
 }
